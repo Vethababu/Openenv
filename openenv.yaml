@@ -1,0 +1,15 @@
+name: traffic-ai-openenv
+description: Smart traffic signal control environment
+version: 1.0
+
+observation_space:
+  lane1: int
+  lane2: int
+  light: int
+  emergency: int
+
+action_space:
+  - keep
+  - switch
+
+reward: minimize waiting cars

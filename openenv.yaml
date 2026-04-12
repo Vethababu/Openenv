@@ -1,69 +1,31 @@
-name: real-world-openenv
-description: Complete real-world OpenEnv for AI agents (code debugging, system ops)
-version: "2.0"
+from pydantic import BaseModel, Field
+from typing import Dict, Any
+import yaml
 
-tasks:
-  - name: code_easy
-    description: Fix a simple syntax/logic bug in a Python function
-    difficulty: easy
-    max_steps: 15
-    observation_space:
-      code_snippet: str
-      error: str
-      tests_passed: int
-      max_tests: int
-      stage: int
-      steps_remaining: int
-    action_space:
-      - no_change
-      - fix_syntax
-      - fix_logic
-      - add_test
-    reward:
-      min: 0.0
-      max: 1.0
-      type: partial_progress
-      description: "tests_passed / max_tests; partial credit per stage"
+with open("openenv.yaml", "r") as f:
+    SPEC = yaml.safe_load(f)
 
-  - name: code_medium
-    description: Fix an off-by-one / recursive bug with efficiency bonus
-    difficulty: medium
-    max_steps: 20
-    observation_space:
-      code_snippet: str
-      error: str
-      tests_passed: int
-      max_tests: int
-      stage: int
-      steps_remaining: int
-    action_space:
-      - no_change
-      - fix_syntax
-      - fix_logic
-      - refactor
-    reward:
-      min: 0.0
-      max: 1.0
-      type: partial_progress_with_efficiency
-      description: "0.85 * (tests_passed/max_tests) + 0.15 * efficiency_bonus"
 
-  - name: sys_hard
-    description: Simulate system setup (install deps, create files in a virtual FS)
-    difficulty: hard
-    max_steps: 25
-    observation_space:
-      cur_dir: str
-      files: str
-      task_goal: str
-      progress: float
-      steps_remaining: int
-    action_space:
-      - ls
-      - pip_install
-      - create_file
-      - cd
-    reward:
-      min: 0.0
-      max: 1.0
-      type: goal_progress
-      description: "progress towards goal (0.0 = nothing done, 1.0 = fully complete)"
+class ConfigRequest(BaseModel):
+    agent_name: str = Field(..., description="Unique session/agent ID")
+    task: str = Field(..., description="Task name: code_easy | code_medium | sys_hard")
+
+
+class AgentRequest(BaseModel):
+    agent_name: str = Field(..., description="Unique session/agent ID")
+
+
+class ObservationResponse(BaseModel):
+    observation: Dict[str, Any]
+
+
+class StepRequest(BaseModel):
+    agent_name: str = Field(..., description="Unique session/agent ID")
+    action: str = Field(..., description="Action string from the task's action_space")
+
+
+class StepResponse(BaseModel):
+    observation: Dict[str, Any]
+    reward: float
+    done: bool
+    info: Dict[str, Any]

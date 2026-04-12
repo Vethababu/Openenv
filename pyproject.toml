@@ -1,0 +1,8 @@
+[project]
+name = "traffic-ai-openenv"
+version = "0.0.1"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "numpy"

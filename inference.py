@@ -1,11 +1,9 @@
 """
 Baseline inference script — runs a rule-based agent on all tasks.
 Produces reproducible scores (same action order, no randomness).
-
 Usage:
     # With server running:
     python inference.py
-
     # To save output:
     python inference.py | tee inf_out.txt
 """
